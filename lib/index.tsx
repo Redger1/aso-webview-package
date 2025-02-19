@@ -4,14 +4,9 @@ import { WebView } from "react-native-webview"
 import CookieManager from "@react-native-cookies/cookies"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-enum LinkCheckMethod {
-	Redirect,
-	Fetch,
-}
-
 export interface WrapperProps {
 	source: string
-	linkCheckMethod: LinkCheckMethod
+	linkCheckMethod: "redirect" | "fetch"
 	failedCheckerLink: string
 	children: React.ReactNode
 
@@ -109,10 +104,10 @@ export const WebViewWrapper: React.FC<WrapperProps> = ({
 						javaScriptEnabled
 						injectedJavaScript={jsCode}
 						injectedJavaScriptBeforeContentLoaded={jsCode}
-						onNavigationStateChange={linkCheckMethod == LinkCheckMethod.Redirect ? onNavChange : undefined}
+						onNavigationStateChange={linkCheckMethod == "redirect" ? onNavChange : undefined}
 						onError={() => setError(true)}
 						onMessage={event => {
-							if (linkCheckMethod == LinkCheckMethod.Redirect) return
+							if (linkCheckMethod == "redirect") return
 
 							console.log(event.nativeEvent.data.replaceAll("&amp;", "&"))
 							if (typeof event.nativeEvent.data === "string" && event.nativeEvent.data.includes("lb-aff")) {
